@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Book CRM</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%234f8cff'/><text x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>B</text></svg>">
+</head>
+<body>
+  <header class="topbar">
+    <button class="icon-btn menu-toggle" id="menuToggle" aria-label="Toggle menu">&#9776;</button>
+    <a href="#/" class="brand">Book CRM</a>
+    <form class="global-search" id="globalSearch" autocomplete="off">
+      <input type="search" id="globalSearchInput" placeholder="Search accounts, contacts, policies, carriers, notes...  ( / )">
+    </form>
+    <div class="topbar-actions">
+      <button class="btn btn-sm" data-quick="account" title="New account (N)">+ Account</button>
+      <button class="btn btn-sm" data-quick="task" title="New task (T)">+ Task</button>
+      <button class="btn btn-sm" data-quick="activity" title="Log activity (A)">+ Activity</button>
+      <button class="icon-btn" id="themeToggle" title="Toggle light/dark">&#9681;</button>
+    </div>
+  </header>
+
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-section" data-section="home">
+      <button class="nav-head">Home</button>
+      <div class="nav-items">
+        <a href="#/">Dashboard</a>
+        <a href="#/today">Today</a>
+      </div>
+    </div>
+    <div class="nav-section" data-section="book">
+      <button class="nav-head">Book of Business</button>
+      <div class="nav-items">
+        <a href="#/accounts">Accounts</a>
+        <a href="#/policies">Policies</a>
+        <a href="#/renewals">Renewal Calendar</a>
+        <a href="#/commission">Commission Book</a>
+      </div>
+    </div>
+    <div class="nav-section" data-section="prospecting">
+      <button class="nav-head">Prospecting</button>
+      <div class="nav-items">
+        <a href="#/pipeline">Pipeline</a>
+        <a href="#/activities">Activity Log</a>
+      </div>
+    </div>
+    <div class="nav-section" data-section="placement">
+      <button class="nav-head">Placement</button>
+      <div class="nav-items">
+        <a href="#/submissions">Submissions</a>
+        <a href="#/documents">Document Checklist</a>
+        <a href="#/lossruns">Loss Runs</a>
+      </div>
+    </div>
+    <div class="nav-section" data-section="work">
+      <button class="nav-head">Work</button>
+      <div class="nav-items">
+        <a href="#/tasks">Tasks</a>
+        <a href="#/team">Internal Team</a>
+      </div>
+    </div>
+    <div class="nav-section" data-section="admin">
+      <button class="nav-head">Reports &amp; Admin</button>
+      <div class="nav-items">
+        <a href="#/reports">Reports</a>
+        <a href="#/settings">Settings</a>
+        <a href="#/archive">Archive</a>
+      </div>
+    </div>
+    <div class="nav-foot">Shortcuts: <kbd>N</kbd> account &middot; <kbd>T</kbd> task &middot; <kbd>A</kbd> activity &middot; <kbd>/</kbd> search</div>
+  </nav>
+  <div class="scrim" id="scrim"></div>
+
+  <main id="main" class="main"></main>
+  <div id="modalRoot"></div>
+  <div id="toastRoot" class="toast-root"></div>
+
+  <script src="/static/js/core.js"></script>
+  <script src="/static/js/forms.js"></script>
+  <script src="/static/js/pages/dashboard.js"></script>
+  <script src="/static/js/pages/accounts.js"></script>
+  <script src="/static/js/pages/renewals.js"></script>
+  <script src="/static/js/pages/pipeline.js"></script>
+  <script src="/static/js/pages/workflow.js"></script>
+  <script src="/static/js/pages/commission.js"></script>
+  <script src="/static/js/pages/reports.js"></script>
+  <script src="/static/js/pages/settings.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

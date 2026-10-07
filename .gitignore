@@ -1,0 +1,9 @@
+# Local data - never commit your book of business
+data/
+*.db
+*.db-journal
+
+# Python
+.venv/
+__pycache__/
+*.pyc
