@@ -119,6 +119,7 @@ const SETTINGS_TABS = {
   },
 
   async data(body) {
+    if (window.LocalAPI) return localDataTab(body);
     body.append(h('div', { class: 'panel', style: { maxWidth: '720px' } },
       h('h2', null, 'Data & backup'),
       h('p', null, 'All data lives in a single SQLite file (', h('code', null, 'data/crm.db'), ' in the app folder). Copy that file to back up, or download a copy here.'),
@@ -126,6 +127,51 @@ const SETTINGS_TABS = {
       h('p', { class: 'muted small', style: { marginTop: '14px' } }, 'Deleted records are archived, not removed — see the ', h('a', { href: '#/archive' }, 'Archive'), ' to restore them.')));
   },
 };
+
+// Standalone (no-install) build: browser storage, linked .db file, backup & restore.
+function localDataTab(body) {
+  const st = LocalAPI.status();
+  const fmt = d => d ? new Date(d).toLocaleString() : 'never';
+  const wrap = (fn, msg) => async () => {
+    try { await fn(); if (msg) toast(msg); await loadLookups(); invalidateAccounts(); refreshRoute(); }
+    catch (e) { if (e.name !== 'AbortError') toast(e.message, true); }
+  };
+  const restoreInput = h('input', { type: 'file', accept: '.db,.sqlite,.sqlite3', class: 'hidden', onchange: async (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    if (!await confirmDialog(`Replace ALL current data with the contents of “${f.name}”? Download a backup first if you're unsure.`, 'Replace data')) return;
+    await wrap(async () => LocalAPI.restoreFromBytes(new Uint8Array(await f.arrayBuffer())), 'Data restored')();
+  } });
+  body.append(
+    h('div', { class: 'panel', style: { maxWidth: '760px', marginBottom: '14px' } },
+      h('h2', null, 'Where your data is saved'),
+      h('p', null, 'Every change is saved automatically inside this browser on this computer (last saved: ', h('strong', null, fmt(st.lastSaved)), '). ',
+        'Nothing is sent anywhere.'),
+      h('p', { class: 'muted' }, 'Browser storage can be wiped if the browser’s data is cleared (some work computers do this automatically), ',
+        'so also keep a copy as a file — either link a file below or download backups regularly.'),
+      st.fsSupported ? h('div', { style: { margin: '14px 0' } },
+        h('h3', null, 'Autosave to a file'),
+        st.fileName
+          ? h('p', null, st.fileOk ? '✓ Every change is also saved to ' : '⚠ Saving paused for ', h('strong', null, st.fileName),
+              st.fileOk ? ` (last write ${fmt(st.lastFileSave)}).` : ' — the browser needs your OK again after a restart.')
+          : h('p', { class: 'muted' }, 'Pick a file (for example in Documents or OneDrive) and every change will be written to it.'),
+        h('div', { class: 'toolbar' },
+          st.fileName && !st.fileOk ? h('button', { class: 'btn btn-primary', onclick: wrap(() => LocalAPI.reconnectFile(), 'Autosave reconnected') }, 'Reconnect ' + st.fileName) : null,
+          h('button', { class: 'btn' + (st.fileName ? '' : ' btn-primary'), onclick: wrap(() => LocalAPI.linkFile(), 'Autosave file linked') }, st.fileName ? 'Save to a different file…' : 'Choose autosave file…'),
+          h('button', { class: 'btn', onclick: async () => {
+            if (!await confirmDialog('Open a .db file and use it from now on? This replaces the data currently in the browser.', 'Open file')) return;
+            await wrap(() => LocalAPI.openFile(), 'Database opened')();
+          } }, 'Open existing .db file…'),
+          st.fileName ? h('button', { class: 'btn btn-ghost', onclick: wrap(() => LocalAPI.unlinkFile(), 'Autosave file unlinked') }, 'Stop autosaving to file') : null))
+        : h('p', { class: 'muted small' }, 'Tip: in Chrome or Edge you can also autosave straight to a file.'),
+      h('h3', null, 'Backups'),
+      h('p', { class: 'muted' }, `Last downloaded backup: ${fmt(st.lastBackup)}.`),
+      h('div', { class: 'toolbar' },
+        h('button', { class: 'btn btn-primary', onclick: () => { LocalAPI.downloadBackup(); toast('Backup downloaded'); refreshRoute(); } }, '⤓ Download backup (.db)'),
+        h('button', { class: 'btn', onclick: () => restoreInput.click() }, 'Restore from backup…'), restoreInput),
+      h('p', { class: 'muted small' }, 'The .db file is the same format as the installable (Python) version’s data/crm.db, so you can move between them.')),
+    h('p', { class: 'muted small' }, 'Deleted records are archived, not removed — see the ', h('a', { href: '#/archive' }, 'Archive'), ' to restore them.'));
+}
 
 route('/archive', async (main) => {
   const rows = await api('/archive');

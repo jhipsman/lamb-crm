@@ -1,1 +1,3 @@
 start.bat text eol=crlf
+BookCRM.html linguist-generated=true
+standalone/vendor/** linguist-vendored=true

@@ -52,11 +52,39 @@
   });
 
   try {
+    if (window.LocalAPI) {
+      $('#main').appendChild(h('div', { class: 'panel' }, 'Loading database…'));
+      await LocalAPI.init();
+      setupLocalStatus();
+    }
     await loadLookups();
   } catch (e) {
-    $('#main').appendChild(h('div', { class: 'panel' }, h('h2', null, 'Cannot reach the CRM server'), h('p', null, e.message)));
+    $('#main').appendChild(h('div', { class: 'panel' }, h('h2', null, window.LocalAPI ? 'Could not open the database' : 'Cannot reach the CRM server'), h('p', null, e.message)));
     return;
   }
   window.addEventListener('hashchange', dispatch);
   dispatch();
 })();
+
+// Standalone build: show save status in the top bar and nag about backups.
+function setupLocalStatus() {
+  const el = h('button', { class: 'btn btn-sm save-status' });
+  $('.topbar-actions').prepend(el);
+  const render = (st) => {
+    const days = st.lastBackup ? Math.floor((Date.now() - new Date(st.lastBackup)) / 86400000) : null;
+    if (st.fileName && !st.fileOk) {
+      el.textContent = '⚠ Reconnect file';
+      el.className = 'btn btn-sm save-status warn';
+      el.title = `Click to re-allow saving to ${st.fileName}`;
+      el.onclick = async () => { await LocalAPI.reconnectFile(); };
+    } else {
+      el.onclick = () => { location.hash = '#/settings?tab=data'; };
+      const needsBackup = !st.fileOk && (days === null || days >= 7);
+      el.textContent = st.dirty ? 'Saving…' : st.fileOk ? `✓ Saved to ${st.fileName}` : needsBackup ? '⚠ Back up your data' : '✓ Saved in browser';
+      el.className = 'btn btn-sm save-status' + (needsBackup ? ' warn' : '');
+      el.title = st.fileOk ? 'Every change is saved to your database file' : 'Saved in this browser. Click for backup options.';
+    }
+  };
+  LocalAPI.onStatus(render);
+  render(LocalAPI.status());
+}

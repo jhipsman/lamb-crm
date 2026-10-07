@@ -1,8 +1,9 @@
 # Book CRM — Nonprofit & Human Services Insurance
 
-A local, single-user CRM for a commercial insurance producer: book of business, renewals,
+A single-user CRM for a commercial insurance producer: book of business, renewals,
 prospecting pipeline, submissions, document chasing, loss runs, tasks, internal handoffs and
-commission tracking. It runs on your own computer, and all data is stored in one SQLite file.
+commission tracking. Everything stays on your own computer, in one SQLite file. There are two ways to run it: a single
+HTML file that needs **no install** (Option A), or a small local Python server (Option B).
 
 - **Backend:** Python 3.9+ / Flask, SQLite (no other services)
 - **Frontend:** plain HTML/CSS/JS (no React, no build step), dark mode by default
@@ -10,21 +11,52 @@ commission tracking. It runs on your own computer, and all data is stored in one
 
 ---
 
-## Quick start
+## Option A — No install (work computers): `BookCRM.html`
 
-### macOS / Linux
+**Just open `BookCRM.html` in Chrome or Edge.** That's it — no Python, no scripts, no admin rights.
+It's the full app in one file: the SQLite database runs inside the browser (via
+[sql.js](https://github.com/sql-js/sql.js), bundled in the file — nothing is loaded from the internet
+and no data leaves your computer).
+
+1. Save `BookCRM.html` somewhere permanent (e.g. Documents). Download it from GitHub with the
+   **Download raw file** button.
+2. Double-click it (or drag it into Chrome/Edge). Bookmark it.
+3. **Protect your data — do this on day one:** go to **Settings → Data & Backup**.
+   - **Choose autosave file…** (Chrome/Edge): pick e.g. `Documents\crm.db` or a OneDrive folder.
+     Every change is then written to that real file. After a browser restart, click the
+     **⚠ Reconnect file** button in the top bar once to let it keep saving.
+   - Or click **Download backup (.db)** regularly. The top bar shows **⚠ Back up your data** when
+     you haven't backed up in 7+ days (and no autosave file is linked).
+
+How saving works: every change is stored in the browser automatically, so closing the tab is
+safe. But some work computers wipe browser data on sign-out, which is why the autosave file /
+backups matter. To move to a new computer or browser, use **Open existing .db file…** or
+**Restore from backup…**.
+
+The `.db` file is identical in format to Option B's `data/crm.db`, so you can switch between the
+two versions at any time.
+
+> `BookCRM.html` is generated — after changing the code, rebuild it with `python build_standalone.py`.
+
+---
+
+## Option B — Local server (Python)
+
+### Quick start
+
+#### macOS / Linux
 ```bash
 ./start.sh
 ```
 
-### Windows
+#### Windows
 Double-click **`start.bat`** (or run it from a terminal).
 
 On the first run the script creates a virtual environment (`.venv/`), installs Flask, creates the
 database at `data/crm.db` and opens **http://localhost:5000** in your browser. Later runs start
 immediately. Stop the server with `Ctrl+C`.
 
-### Manual start
+#### Manual start
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
@@ -32,7 +64,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-### Options (environment variables)
+#### Options (environment variables)
 | Variable | Default | Purpose |
 |---|---|---|
 | `CRM_PORT` | `5000` | Port to serve on |
@@ -47,7 +79,7 @@ networks.
 
 ---
 
-## Backups
+## Backups (Option B)
 
 Everything is in **`data/crm.db`**. To back up, copy that file (with the server stopped), or use
 **Settings → Data & Backup → Download database backup** at any time. The `data/` folder is in
@@ -73,7 +105,12 @@ lamb-crm/
 │       ├── forms.js        Record forms & quick-add dialogs
 │       ├── app.js          Boot, keyboard shortcuts, search, theme
 │       └── pages/          dashboard, accounts, renewals, pipeline, workflow, commission, reports, settings
-├── data/crm.db             Created on first run (git-ignored)
+├── standalone/
+│   ├── localapi.js         In-browser backend for BookCRM.html (mirrors crm/*.py on sql.js)
+│   └── vendor/             sql.js (SQLite → WebAssembly), MIT licensed
+├── build_standalone.py     Bundles everything into BookCRM.html
+├── BookCRM.html            Option A: the whole app in one file (generated)
+├── data/crm.db             Option B database, created on first run (git-ignored)
 ├── requirements.txt
 ├── start.sh / start.bat
 └── README.md

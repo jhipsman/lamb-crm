@@ -38,6 +38,8 @@ const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
 // ---------------------------------------------------------------- API
 async function api(path, opts = {}) {
+  // Standalone build: the backend runs in the browser (standalone/localapi.js).
+  if (window.LocalAPI) return LocalAPI.handle(opts.method || 'GET', path, opts.body);
   const init = { method: opts.method || 'GET', headers: {} };
   if (opts.body !== undefined) {
     init.headers['Content-Type'] = 'application/json';
