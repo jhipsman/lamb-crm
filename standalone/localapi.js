@@ -800,7 +800,7 @@ const LocalAPI = (() => {
   async function handle(method, path, body) {
     try {
       const result = route(method, path, body);
-      if (method !== 'GET') await persist();
+      if (method !== 'GET' && !state.deferred) await persist();
       return result;
     } catch (e) {
       if (e instanceof ValidationError) throw Object.assign(new Error(e.message), { status: 400 });
@@ -856,8 +856,15 @@ const LocalAPI = (() => {
     notify();
   }
 
+  // Bulk operations (e.g. the document importer): save once at the end instead of after every write.
+  async function withDeferredSave(fn) {
+    state.deferred = true;
+    try { return await fn(); }
+    finally { state.deferred = false; await persist(); }
+  }
+
   return {
-    init, handle, status, downloadBackup, restoreFromBytes, linkFile, openFile, reconnectFile, unlinkFile,
+    init, handle, withDeferredSave, status, downloadBackup, restoreFromBytes, linkFile, openFile, reconnectFile, unlinkFile,
     onStatus: fn => state.listeners.push(fn),
   };
 })();

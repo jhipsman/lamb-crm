@@ -361,3 +361,7 @@ tr.row-history td { color: var(--muted); font-style: italic; }
 .save-status { max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
 .save-status.warn { border-color: var(--warn); color: var(--warn); }
 @media (max-width: 1100px) { .topbar-actions .btn.save-status { display: inline-flex; } }
+
+.dropzone { border: 2px dashed var(--border); border-radius: 10px; padding: 28px 16px; text-align: center; background: var(--bg-2); transition: border-color .15s, background .15s; }
+.dropzone.over { border-color: var(--accent); background: var(--row-hover); }
+.dropzone .big { font-size: 34px; color: var(--muted); line-height: 1; margin-bottom: 6px; }

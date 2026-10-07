@@ -104,7 +104,7 @@ lamb-crm/
 │       ├── core.js         DOM/API helpers, modal, form builder, sortable/filterable table + CSV
 │       ├── forms.js        Record forms & quick-add dialogs
 │       ├── app.js          Boot, keyboard shortcuts, search, theme
-│       └── pages/          dashboard, accounts, renewals, pipeline, workflow, commission, reports, settings
+│       └── pages/          dashboard, accounts, renewals, pipeline, workflow, commission, reports, settings, importer
 ├── standalone/
 │   ├── localapi.js         In-browser backend for BookCRM.html (mirrors crm/*.py on sql.js)
 │   └── vendor/             sql.js (SQLite → WebAssembly), MIT licensed
@@ -137,6 +137,7 @@ lamb-crm/
 | **Tasks** | Work | Linked to an account or standalone. Has priority, category and assignee (Self, Placement, Account Management, Operations). |
 | **Internal Team** | Work | Placement exec, account manager and operations contact per account, with handoff status and notes |
 | **Reports** | Admin | Book of business, renewals by date range, pipeline by stage, submissions by carrier and status (with bind ratio), commission by month/quarter/year, lost business with reasons. All can be sorted, filtered and exported to CSV. |
+| **Import Documents** | Admin | Point it at your client/prospect folders or a .zip (any size). It sorts them into accounts and marks checklist documents Received, using **file and folder names only**. Files are never opened or uploaded. You review everything before saving. |
 | **Settings** | Admin | My info (added to the top of exports), commission % per line, carriers, account type tags, team members, document templates, backup |
 | **Archive** | Admin | Deleted records are archived (soft delete), and you can restore them from here |
 
